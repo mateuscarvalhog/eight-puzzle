@@ -7,8 +7,6 @@ class Puzzle:
         self.initial_state = self.generate_initial_state()
         self.solution = self.solve()
 
-        print('\n'.join(map(lambda state: state.to_string(), self.solution)))
-
     def generate_initial_state(self):
         return PuzzleState([[7, 3, 5], [2, 8, 6], [4, 1, None]])  # TODO mudar constante de estado inicial
     
