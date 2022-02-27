@@ -11,6 +11,9 @@ class PuzzleState:
         self.matrix = matrix
         self.parent = parent
 
+    def __lt__(self, other: PuzzleState):
+        return True
+
     def move_piece(self, source_position: Position, target_position: Position) -> PuzzleState:
         move_in_two_dimensions = source_position.row != target_position.row and source_position.column != target_position.column
         move_more_than_one_position = abs(source_position.row - target_position.row) > 1 or abs(source_position.column - target_position.column) > 1
@@ -25,7 +28,7 @@ class PuzzleState:
         new_matrix[source_position.row][source_position.column] = element_at_target
         new_matrix[target_position.row][target_position.column] = element_at_source
 
-        return PuzzleState(new_matrix)
+        return PuzzleState(new_matrix, self)
 
     def is_equal(self, state: PuzzleState) -> bool:
         """Check if self puzzle state and another puzzle state are identical"""
