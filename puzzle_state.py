@@ -1,6 +1,6 @@
 class PuzzleState:
 
-    def __init__(self, matrix, parent):
+    def __init__(self, matrix, parent = None):
         self.matrix = matrix
         self.parent = parent
 
