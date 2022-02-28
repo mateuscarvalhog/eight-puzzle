@@ -12,8 +12,8 @@ Este projeto foi desenvolvido utilizando a linguagem de programação Python na 
 
 Logo, para executar o programa é necessário ter o Python3 instalado na máquina e executar o seguinte comando no terminal:
 
-```py
-python3 puzzle.py
+```
+$ python3 puzzle.py
 ```
 
 ## Sobre o projeto
