@@ -15,7 +15,3 @@ Logo, para executar o programa é necessário ter o Python3 instalado na máquin
 ```console
 python3 puzzle.py
 ```
-
-## Sobre o projeto
-
-TODO
