@@ -1,17 +1,52 @@
-from typing import List, final
+from __future__ import annotations
+from typing import List
 from position import Position
 from puzzle_state import PuzzleState
-from queue import PriorityQueue
-# .put((md_value, state))
-# .get() retorna tupla
+from priority_queue import PriorityQueue
+from queue import SimpleQueue
 
 class Agent:
-
     def __init__(self, initial_state: PuzzleState, objective_state: PuzzleState):
         self.initial_state = initial_state
         self.objective_state = objective_state
 
-    def play_with_blind_search(self):
+    def play_with_blind_search(self) -> SearchResult:
+        # execucao geral do agente: List<PuzzleState>
+        simple_queue = SimpleQueue()
+        already_expanded_states = list()
+
+        simple_queue.put(self.initial_state)
+        already_expanded_states.append(self.initial_state)
+        state_had_not_been_expanded = lambda state: all(not expanded_state.is_equal(state) for expanded_state in already_expanded_states)
+
+        final_state = None
+
+        while final_state is None and not simple_queue.empty():
+            current_state = simple_queue.get()
+
+            if current_state.is_equal(self.objective_state):
+                final_state = current_state
+            else:
+                new_states = Agent.generate_new_states(current_state)
+                new_unexpanded_states = list(filter(state_had_not_been_expanded, new_states))
+                already_expanded_states.extend(new_unexpanded_states)
+
+                for state in new_unexpanded_states:
+                    simple_queue.put(state)
+
+        if final_state is not None:
+            trace_route = [final_state]
+
+            current_state = final_state
+            while current_state.parent is not None:
+                trace_route.insert(0, current_state.parent)
+                current_state = current_state.parent
+            
+            return SearchResult(len(already_expanded_states) - simple_queue.qsize(), trace_route)
+
+        return SearchResult(len(already_expanded_states), trace_route)
+
+    def play_with_heuristic_search(self) -> SearchResult:
         # execucao geral do agente: List<PuzzleState>
         priority_queue = PriorityQueue()
         already_expanded_states = list()
@@ -23,12 +58,12 @@ class Agent:
         final_state = None
 
         while final_state is None and not priority_queue.empty():
-            _, current_state = priority_queue.get()
+            current_state = priority_queue.get()
 
             if current_state.is_equal(self.objective_state):
                 final_state = current_state
             else:
-                new_states = self.generate_new_states(current_state)
+                new_states = Agent.generate_new_states(current_state)
                 new_unexpanded_states = list(filter(state_had_not_been_expanded, new_states))
                 already_expanded_states.extend(new_unexpanded_states)
 
@@ -44,9 +79,11 @@ class Agent:
                 trace_route.insert(0, current_state.parent)
                 current_state = current_state.parent
             
-            return trace_route
+            return SearchResult(len(already_expanded_states) - priority_queue.size(), trace_route)
+
+        return SearchResult(len(already_expanded_states), trace_route)
     
-    def generate_new_states(self, state: PuzzleState) -> List[PuzzleState]:
+    def generate_new_states(state: PuzzleState) -> List[PuzzleState]:
         # gera novos estados a partir do atual: List<PuzzleState>
         blank_position = state.get_blank_position()
 
@@ -77,8 +114,14 @@ class Agent:
 
         return new_states
 
-    def add_node(self, state: PuzzleState):
-        priority_value = state.calculate_manhattan_distance(self.objective_state)
-        # self.nodes = TODO melhorar nome e implementar hash
-        # node_already_exists = any(node.is_equal(new_node) for node in self.nodes)
-        print("add_node")
+class SearchResult:
+    def __init__(self, number_of_visited_nodes: int, trace_route: List[PuzzleState] = []):
+        self.number_of_visited_nodes = number_of_visited_nodes
+        self.trace_route = trace_route
+
+    def __repr__(self):
+        str_to_return = f'Number of visited nodes: {self.number_of_visited_nodes}\n'
+        str_to_return += f'Number of steps: {len(self.trace_route)}\n\n'
+        str_to_return += '-'*20 + '\n'
+
+        return str_to_return
