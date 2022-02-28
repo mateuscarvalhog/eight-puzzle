@@ -11,8 +11,14 @@ class PuzzleState:
         self.matrix = matrix
         self.parent = parent
 
-    def __lt__(self, other: PuzzleState):
-        return True
+    def __repr__(self): 
+        value_to_string: Callable[[], str] = lambda value: ' ' if value == None else str(value)
+
+        str_puzzle_state = ''
+        for line in self.matrix:
+            str_puzzle_state += ' | '.join(map(value_to_string, line)) + '\n'
+
+        return str_puzzle_state
 
     def move_piece(self, source_position: Position, target_position: Position) -> PuzzleState:
         move_in_two_dimensions = source_position.row != target_position.row and source_position.column != target_position.column
@@ -65,12 +71,3 @@ class PuzzleState:
                     manhattan_distance += abs(column - objective_position.column)
         
         return manhattan_distance
-
-    def to_string(self) -> str:
-        value_to_string: Callable[[], str] = lambda value: ' ' if value == None else str(value)
-
-        str_puzzle_state = ''
-        for line in self.matrix:
-            str_puzzle_state += ' | '.join(map(value_to_string, line)) + '\n'
-
-        return str_puzzle_state
