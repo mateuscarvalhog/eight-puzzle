@@ -1,6 +1,6 @@
-from logging.config import valid_ident
 from random import randint
 from typing import List
+from menu import Menu
 from puzzle_state import PuzzleState
 from agent import Agent
 import time
@@ -9,12 +9,8 @@ import os
 class Puzzle:
     def __init__(self):
         self.objective_state = PuzzleState([[1, 2, 3], [4, 5, 6], [7, 8, None]])
-        # self.objective_state = PuzzleState([[1, 2, 3], [8, None, 4], [7, 6, 5]])
         self.initial_state = self.generate_initial_state()
         self.solver = Agent(self.initial_state, self.objective_state)
-
-        print("\nYour initial state:")
-        print(self.initial_state)
 
     def generate_initial_state(self):
         number_of_iterations = randint(500, 1500)
@@ -26,9 +22,22 @@ class Puzzle:
             initial_state = new_states[random_index]
 
         return initial_state
-        # return PuzzleState([[1, None, 3], [5, 2, 6], [4, 7, 8]])  # TODO mudar constante de estado inicial
-        # return PuzzleState([[4, 8, 1], [7, 3, 5], [None, 6, 2]])  # TODO mudar constante de estado inicial
     
+    def set_initial_state(self, initial_state_str: str):
+        matrix_of_initial_state = list()
+
+        for index in range(len(initial_state_str)):
+            row = int(index/PuzzleState.NUM_OF_COLUMNS)
+
+            element = None if initial_state_str[index] == "0" else int(initial_state_str[index])
+
+            if (row >= len(matrix_of_initial_state)):
+                matrix_of_initial_state.append(list())
+
+            matrix_of_initial_state[row].append(element)
+
+        self.initial_state = PuzzleState(matrix_of_initial_state)
+
     def solve_with_blind_search(self):
         print("\n\nSolving puzzle with Breadth-First blind search method...")
         
@@ -60,50 +69,33 @@ class Puzzle:
             print(state)
             time.sleep(.001)
 
-
-def print_invalid_input(valid_inputs): # TODO TIPAR INT[]
-    error = "Please select a valid option: "
-    for i in range(len(valid_inputs)):
-        error += str(valid_inputs[i])
-        if (i < len(valid_inputs) - 1):
-            error += " or "
-    
-    print(error)
-
-def is_input_valid(input, valid_inputs): # TODO tipar params
-    is_valid = False
-    last_index = len(valid_inputs) - 1
-    index = 0
-    while (not is_valid and index <= last_index):
-        if (valid_inputs[index] == input):
-            is_valid = True
-        index += 1
-        
-    return is_valid
-
-def get_valid_option(first_try, valid_inputs):
-    option = first_try
-    while (not is_input_valid(option, valid_inputs)):
-        print_invalid_input(valid_inputs)
-        option = input()
-    
-    return option
-
 def main():
-    print("THE 8-PUZZLE SOLVER\n")
+    search_menu = Menu([(1, 'Blind search (Breadth-first)'), (2, 'Heuristic search (Manhattan distance)')], 'Choose a search method')
 
-    game_option = 0
-    while (game_option != "2"):
-        game_option = get_valid_option(input("\nType the number of your action:\n1. New game\t2. Exit\n"), ["1", "2"])
+    main_menu = Menu([(1, 'New random game'), (2, 'New custom game'), (0, 'Exit')], 'THE 8-PUZZLE SOLVER')
+    main_menu.show(show_title = True)
 
-        if (game_option == "1"):
-            puzzle = Puzzle()
-            
-            search_option = get_valid_option(input("\nType the number of the search method:\n1. Blind search (Breadth-first)\t\t2. Heuristic search (Manhattan distance)\n"), ["1", "2"])
-            if (search_option == "1"):
-                puzzle.solve_with_blind_search()
-            elif (search_option == "2"):
-                puzzle.solve_with_heuristic_search()
+    game_option = main_menu.wait_an_option()
+
+    while game_option != 0:
+        puzzle = Puzzle()
+
+        if game_option == 2:
+            initial_state = input("Enter game state, from top-left to right-bottom, 9 characters, e.g. \"1034526478\": ")
+            puzzle.set_initial_state(initial_state)
+        
+        print("\nYour initial state:")
+        print(puzzle.initial_state)
+
+        search_menu.show()
+        search_option = search_menu.wait_an_option()
+        if (search_option == 1):
+            puzzle.solve_with_blind_search()
+        elif (search_option == 2):
+            puzzle.solve_with_heuristic_search()
+
+
+        game_option = main_menu.wait_an_option(show_menu = True, show_title = True)
         
     print("\n\nTHANK YOU FOR PLAYING THE 8-PUZZLE SOLVER!")
 
