@@ -11,7 +11,7 @@ class Agent:
         self.objective_state = objective_state
 
     def play_with_blind_search(self) -> SearchResult:
-        # execucao geral do agente: List<PuzzleState>
+        """Execution of the Agent using blind search - Breadth-Firs method"""
         simple_queue = SimpleQueue()
         already_expanded_states = list()
 
@@ -47,7 +47,7 @@ class Agent:
         return SearchResult(len(already_expanded_states), trace_route)
 
     def play_with_heuristic_search(self) -> SearchResult:
-        # execucao geral do agente: List<PuzzleState>
+        """Execution of the Agent using heuristic search - Manhattan Distance method"""
         priority_queue = PriorityQueue()
         already_expanded_states = list()
 
@@ -84,7 +84,7 @@ class Agent:
         return SearchResult(len(already_expanded_states), trace_route)
     
     def generate_new_states(state: PuzzleState) -> List[PuzzleState]:
-        # gera novos estados a partir do atual: List<PuzzleState>
+        """Generate new states from current one"""
         blank_position = state.get_blank_position()
 
         blank_is_not_at = {
@@ -115,6 +115,7 @@ class Agent:
         return new_states
 
 class SearchResult:
+    """Structure for returning the trace route of the search result"""
     def __init__(self, number_of_visited_nodes: int, trace_route: List[PuzzleState] = []):
         self.number_of_visited_nodes = number_of_visited_nodes
         self.trace_route = trace_route

@@ -58,7 +58,7 @@ class PuzzleState:
         return self.get_element_position(None)
 
     def calculate_manhattan_distance(self, objective_state: PuzzleState) -> int:
-        # calcula o valor da heuristica para fila de prioridades: List<PuzzleState>
+        """Calculate the Manhattan Distance heuristic value. Used by the priority queue"""
         manhattan_distance = 0
         
         for row in range(PuzzleState.NUM_OF_ROWS):
