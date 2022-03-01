@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import List
+from typing import Callable, List
 from position import Position
 from puzzle_state import PuzzleState
 from priority_queue import PriorityQueue
@@ -13,11 +13,11 @@ class Agent:
     def play_with_blind_search(self) -> SearchResult:
         """Execution of the Agent using blind search - Breadth-Firs method"""
         simple_queue = SimpleQueue()
-        already_expanded_states = list()
+        already_expanded_states: List[PuzzleState] = list()
 
         simple_queue.put(self.initial_state)
         already_expanded_states.append(self.initial_state)
-        state_had_not_been_expanded = lambda state: all(not expanded_state.is_equal(state) for expanded_state in already_expanded_states)
+        state_had_not_been_expanded: Callable[[PuzzleState], bool] = lambda state: all(not expanded_state.is_equal(state) for expanded_state in already_expanded_states)
 
         final_state = None
 
@@ -53,7 +53,7 @@ class Agent:
 
         priority_queue.put((0, self.initial_state))
         already_expanded_states.append(self.initial_state)
-        state_had_not_been_expanded = lambda state: all(not expanded_state.is_equal(state) for expanded_state in already_expanded_states)
+        state_had_not_been_expanded: Callable[[PuzzleState], bool] = lambda state: all(not expanded_state.is_equal(state) for expanded_state in already_expanded_states)
 
         final_state = None
 
@@ -98,22 +98,21 @@ class Agent:
 
         if blank_is_not_at['top']:
             target_position: Position = Position(blank_position.row - 1, blank_position.column)
-            new_states.append(state.move_piece(blank_position, target_position))
+            new_states.append(state.move_blank(target_position))
 
         if blank_is_not_at['bottom']:
             target_position: Position = Position(blank_position.row + 1, blank_position.column)
-            new_states.append(state.move_piece(blank_position, target_position))
+            new_states.append(state.move_blank(target_position))
 
         if blank_is_not_at['left']:
             target_position: Position = Position(blank_position.row, blank_position.column - 1)
-            new_states.append(state.move_piece(blank_position, target_position))
+            new_states.append(state.move_blank(target_position))
 
         if blank_is_not_at['right']:
             target_position: Position = Position(blank_position.row, blank_position.column + 1)
-            new_states.append(state.move_piece(blank_position, target_position))
+            new_states.append(state.move_blank(target_position))
 
         return new_states
-
 class SearchResult:
     """Structure for returning the trace route of the search result"""
     def __init__(self, number_of_visited_nodes: int, trace_route: List[PuzzleState] = []):
@@ -122,7 +121,7 @@ class SearchResult:
 
     def __repr__(self):
         str_to_return = f'Number of visited nodes: {self.number_of_visited_nodes}\n'
-        str_to_return += f'Number of steps: {len(self.trace_route)}\n\n'
+        str_to_return += f'Number of steps: {len(self.trace_route) - 1}\n\n'
         str_to_return += '-'*20 + '\n'
 
         return str_to_return
