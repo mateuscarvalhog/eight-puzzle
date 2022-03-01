@@ -20,21 +20,20 @@ class PuzzleState:
 
         return str_puzzle_state
 
-    def move_piece(self, source_position: Position, target_position: Position) -> PuzzleState:
-        move_in_two_dimensions = source_position.row != target_position.row and source_position.column != target_position.column
-        move_more_than_one_position = abs(source_position.row - target_position.row) > 1 or abs(source_position.column - target_position.column) > 1
+    def move_blank(self, target_position: Position) -> PuzzleState:
+        blank_position = self.get_blank_position()
+
+        move_in_two_dimensions = blank_position.row != target_position.row and blank_position.column != target_position.column
+        move_more_than_one_position = abs(blank_position.row - target_position.row) > 1 or abs(blank_position.column - target_position.column) > 1
 
         if move_in_two_dimensions or move_more_than_one_position:
             raise Exception('Invalid movement!')
 
-        element_at_source = self.matrix[source_position.row][source_position.column]
-        element_at_target = self.matrix[target_position.row][target_position.column]
-
         new_matrix = deepcopy(self.matrix)
-        new_matrix[source_position.row][source_position.column] = element_at_target
-        new_matrix[target_position.row][target_position.column] = element_at_source
+        new_matrix[blank_position.row][blank_position.column] = self.matrix[target_position.row][target_position.column]
+        new_matrix[target_position.row][target_position.column] = None
 
-        return PuzzleState(new_matrix, self)
+        return PuzzleState(new_matrix, parent = self)
 
     def is_equal(self, state: PuzzleState) -> bool:
         """Check if self puzzle state and another puzzle state are identical"""
@@ -47,9 +46,9 @@ class PuzzleState:
     def get_element_position(self, given_element) -> Position:
         """Get row and column of given element."""
         list_has_given_element = lambda some_list: any(element is given_element for element in some_list)
-        row_with_given = next(filter(list_has_given_element, self.matrix), None)
-        row_index = self.matrix.index(row_with_given)
-        column_index = row_with_given.index(given_element)
+        row_with_given_element = next(iter(filter(list_has_given_element, self.matrix)), None)
+        row_index = self.matrix.index(row_with_given_element)
+        column_index = row_with_given_element.index(given_element)
 
         return Position(row_index, column_index)
     
