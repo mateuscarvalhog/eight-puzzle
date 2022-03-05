@@ -7,6 +7,8 @@ import time
 import os
 
 class Puzzle:
+    THANKS_MESSAGE = "\n\nTHANK YOU FOR PLAYING THE 8-PUZZLE SOLVER!"
+
     def __init__(self, initial_state_str: str):
         self.objective_state = PuzzleState([[1, 2, 3], [4, 5, 6], [7, 8, None]])
         self.initial_state = self.generate_random_initial_state() if initial_state_str is None else self.build_initial_state_from_str(initial_state_str)
@@ -20,6 +22,8 @@ class Puzzle:
             new_states = Agent.generate_new_states(initial_state)
             random_index = randint(0, len(new_states) - 1)
             initial_state = new_states[random_index]
+
+        initial_state.parent = None
 
         return initial_state
     
@@ -99,7 +103,10 @@ def main():
 
         game_option = main_menu.wait_an_option(show_menu = True, show_title = True)
         
-    print("\n\nTHANK YOU FOR PLAYING THE 8-PUZZLE SOLVER!")
+    print(Puzzle.THANKS_MESSAGE)
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except KeyboardInterrupt:
+        print(Puzzle.THANKS_MESSAGE)
