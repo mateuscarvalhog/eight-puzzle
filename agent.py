@@ -72,13 +72,13 @@ class Agent:
                     priority_queue.put((manhattan_distance, state))
 
         if final_state is not None:
-            trace_route = [final_state]
+            trace_route = list()
 
             current_state = final_state
-            while current_state.parent is not None:
-                trace_route.insert(0, current_state.parent)
+            while current_state is not None:
+                trace_route.insert(0, current_state)
                 current_state = current_state.parent
-            
+
             return SearchResult(len(already_expanded_states) - priority_queue.size(), trace_route)
 
         return SearchResult(len(already_expanded_states), trace_route)
