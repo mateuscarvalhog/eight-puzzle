@@ -18,14 +18,14 @@ class Menu:
         if show_menu:
             self.show(show_title)
         
-        chosen_option = int(input("\nChoose an option: "))
+        chosen_option = input("\nChoose an option: ")
 
         if self.option_is_valid(chosen_option):
-            return chosen_option
+            return int(chosen_option)
         else:
             print('\nChoose a valid option!\n')
             self.show()
-            self.wait_an_option()
+            return self.wait_an_option()
 
     def option_is_valid(self, option):
-        return any(valid_option == option for valid_option, _ in self.options)
+        return option.isnumeric() and any(valid_option == int(option) for valid_option, _ in self.options)
